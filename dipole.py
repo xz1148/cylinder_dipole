@@ -1,16 +1,25 @@
+
 # this module generates the coordinate and the boundary conditions of a diple
 # the dipole is vertically polarized, so the dipole is aligned along the
 # direction of z-axis
 # unit: in meters
-# input:
-# x, y, z: float, the coordinate of the central point of a dipole
-# length: float, the total length of the dipole
-# dl: the filament size of the dipole
 
 
 import numpy as np
 
 def dipole(x, y, z, length, dl):
+# input:
+# x, y, z: float, the coordinate of the central point of a dipole
+# length: float, the total length of the dipole
+# dl: the filament size of the dipole
+# returned value:
+
+# Nodes_xyz: the coordinate of all nodes, N_nodes * 3 array
+# Segments:the tuple of node's indexes, which forms a segment, N_segments * 2
+# array
+# N_nodes: number of the nodes
+# N_segments: number of the segments
+
 
     N_nodes = int(np.rint(length / dl)) # round the value, the number of nodes
     if N_nodes%2 == 0:       # if the number of nodes is even
@@ -33,7 +42,8 @@ def dipole(x, y, z, length, dl):
     Segments_node1 = np.reshape(np.arange(N_segments), (N_segments, 1)) # the index of the nodes of one end of segment
     Segments_node2 = np.reshape(np.arange(N_segments)+1, (N_segments, 1))  # the index of the nodes of one end of segment
     Segments = np.concatenate((Segments_node1, Segments_node2), axis = 1)
-    return Nodes_xyz, Segments
+    return Nodes_xyz, Segments, N_nodes, N_segments
+
 
 
 

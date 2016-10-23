@@ -27,13 +27,17 @@ dl_dipole = lambda0 / 10   # the maximum segment length of the dipole
 
 # node_xyz is the coordinate in meters
 # segment is a 2 * N tuple, the indexes of two nodes who connected together
-node_xyz, segment = dp.dipole( x_dipole,
+node_xyz, segment, N_nodes, N_segments = dp.dipole( x_dipole,
                               y_dipole,
                               z_dipole,
                               length_dipole,
                               dl_dipole )
 
+# first calculate the coordinate of segments center point
+segment_center_xyz = (node_xyz[segment[:,0]] + node_xyz[segment[:,1]]) / 2.0
+
+
 print "this is the result"
+print segment_center_xyz
 print node_xyz
-print segment
 
