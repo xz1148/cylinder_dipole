@@ -21,14 +21,9 @@ def dipole(x, y, z, length, dl):
     Tip1_z = z + length / 2.0  # the z coordinate of one tip of dipole
     Tip2_z = z - length / 2.0  # the z coordinate of another tip of the dipole
     Nodes_z = np.linspace(Tip1_z, Tip2_z, N_nodes) # the nodes z coordinate
-    print 'tip1 %f' % Tip1_z
-    print 'tip2 %f' % Tip2_z
-    print Nodes_z
 
     xy = np.array([x,y])  # a single row of x, y
     Nodes_xy = np.tile(xy, (N_nodes, 1)); # now the xy coordinates is constructed N_nodes times
-    print Nodes_xy.shape
-    print Nodes_z.shape
 
     # now concatenate the Nodes_xy and Nodes_z
     # Nodes_xyz is an array of xyz coordinates
