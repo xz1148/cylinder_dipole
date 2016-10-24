@@ -77,14 +77,41 @@ Q1 = -1 / (-1j * omega)
 # vector point from the nodes to the matching points
 v_node0_to_match = match_xyz_m - node0_xyz_m;
 v_node1_to_match = match_xyz_m - node1_xyz_m;
+
+
+# the distance from the nodes to the matching point, also the magnitude of all
+# those vectors
+
 r_node0_to_match = np.linalg.norm(v_node0_to_match, axis = 2)
 r_node1_to_match = np.linalg.norm(v_node1_to_match, axis = 2)
+r_node0_to_match_reshape = np.reshape( np.repeat( r_node0_to_match, 3, axis = 1), \
+                                      (N_match, N_segments, 3))
+r_node1_to_match_reshape = np.reshape( np.repeat( r_node1_to_match, 3, axis = 1), \
+                                      (N_match, N_segments, 3))
 
-print r_seg_to_match
-print r_node0_to_match
-print r_node1_to_match
+
+# unit vector point form the nodes to the matching point
+u_node0_to_match = v_node0_to_match / r_node0_to_match_reshape
+u_node1_to_match = v_node1_to_match / r_node1_to_match_reshape
 
 
+
+G_Q0 = (-1.0/EMConst.eps0) * (1.0/(4.0*np.pi)) * (1/r_node0_to_match) * \
+    (1/r_node0_to_match + 1j * k0) * np.exp(-1j * k0 * r_node0_to_match)
+G_Q1 = (-1.0/EMConst.eps0) * (1.0/(4.0*np.pi)) * (1/r_node1_to_match) * \
+    (1/r_node1_to_match + 1j * k0) * np.exp(-1j * k0 * r_node1_to_match)
+G_Q0_reshape = np.reshape( np.repeat(G_Q0, 3, axis = 1), (N_match, N_segments, 3))
+G_Q1_reshape = np.reshape( np.repeat(G_Q1, 3, axis = 1), (N_match, N_segments, 3))
+
+
+# E = -1j * omega * A - laplace * phi
+E = -1j * omega * A - Q0 * u_node0_to_match * G_Q0_reshape - \
+    Q1 * u_node0_to_match * G_Q1_reshape
+
+
+
+
+print E
 ## "I" is the current filament frow from node0 to node1
 #dI =  node1_xyz - node0_xyz
 #v_seg_to_match = np.reshape(np.tile(match_xyz, N_segments), (N_segments, N_segments, 3)) \

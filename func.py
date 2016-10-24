@@ -1,6 +1,6 @@
 # common functions in the program
 import numpy as np
-
+import EMConst
 def xs2xsm (xs, N_match):
 # this function will turn a (N_segments, 3) matrix into a (N_match, N_segments,
 # 3) matrix.
@@ -21,4 +21,9 @@ def xo2xom (xo, N_segments):
     xom = np.reshape( xo_tile, (N_match, N_segments, 3) )
     return xom
 
-
+def G_A (R):
+# this is the Green's function for A vector
+# input:
+# R: the matrix |r - r'|, r is the observation point, r' is the source point
+    G = -EMConst.mu0 * (-1.0 / (4.0 * np.pi)) * np.exp( 1j * k0 * R )
+    return G
