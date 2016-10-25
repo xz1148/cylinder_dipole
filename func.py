@@ -1,4 +1,5 @@
 # common functions in the program
+import necpp
 import numpy as np
 import EMConst
 
@@ -73,3 +74,30 @@ def R(field_xyz, source_xyz):
 
     return R_source_to_field, v_field_source_x, v_field_source_y, \
         v_field_source_z
+
+
+def handle_nec(result):
+    if (result != 0):
+        print necpp.nec_error_message()
+
+
+def dipole_impedance(freq, length, n_seg, source_seg, rho_dipole):
+    # input
+    # freq: float, frequency in MHz
+    # length: float, the length of dipole
+    # n_seg: the number of segments
+    # source_seg: tag of source segment
+    wavelength = EMConst.c0 / freq
+    nec = necpp.nec_create()
+    handle_nec(necpp.nec_wire(nec, 1, n_seg, 0, 0, length/2.0, 0, 0, -length/2.0
+                        ,rho_dipole, 1.0, 1.0))
+    handle_nec(necpp.nec_geometry_complete(nec, 0))
+    handle_nec(necpp.nec_fr_card(nec, 0, 1, freq, 0))
+    handle_nec(necpp.nec_ex_card(nec, 0, 0, source_seg, 0, 1.0, 0, 0, 0, 0, 0))
+    handle_nec(necpp.nec_xq_card(nec, 0))
+    z = complex(necpp.nec_impedance_real(nec, 0),
+                necpp.nec_impedance_imag(nec, 0))
+    necpp.nec_delete(nec)
+    return z
+
+

@@ -1,3 +1,4 @@
+import necpp
 import EMConst     # this file contains basic EM constants
 import dipole as dp
 import numpy as np
@@ -91,11 +92,15 @@ print node1_xyz
 E_z = E_A_z - E_phi_z
 # set up the Excitations
 V_in =  np.zeros(N_match, float)
-V_in[(N_match+1)/2-1] = 1.0
+n_source = (N_match + 1)/2 - 1
+
+V_in[n_source] = 1.0
 I = np.linalg.solve(E_z, V_in)
-Z_in =  1.0 * np.abs(dI_z[0]) / I[(N_match+1)/2-1]
+Z_in =  1.0 * np.abs(dI_z[0]) / I[n_source]
+Z_in_2 = func.dipole_impedance(freq / 1.0e6, length_dipole, N_match, n_source,
+                               rho_dipole)
 print Z_in
-print np.abs(I[(N_match+1)/2-1])
-plt.plot(segment_xyz[:,2], np.abs(I))
-plt.show()
+print Z_in_2
+#plt.plot(segment_xyz[:,2], np.abs(I))
+#plt.show()
 
