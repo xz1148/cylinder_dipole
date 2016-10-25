@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import func
 
 print '==========program start running==========\n'
-freq = 300.0e6   # frequency, the float number
+freq = 1000.0e6   # frequency, the float number
 print 'The frequency is %7.2f MHz' % (freq / 1e6)
 lambda0 = EMConst.c0 / freq # the wave length in free space
 print 'The wave length in free space is %2.1f meters' % (lambda0)
@@ -28,7 +28,7 @@ length_dipole = lambda0 / 2 * 0.95 # dipole antennas length is half wave length
 # the maximum segment length of the dipole, this number could be different from
 # the real segment length
 dl_dipole = lambda0 / 30
-rho_dipole = 0.015   # the radius of the dipole
+rho_dipole = 0.010   # the radius of the dipole
 
 
 
