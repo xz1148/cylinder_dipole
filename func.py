@@ -29,7 +29,7 @@ def G_A(k, R):
     # this is the Green's function for A vector
     # input:
     # R: the matrix |r - r'|, r is the observation point, r' is the source point
-    G = -EMConst.mu0 * (-1.0 / (4.0*np.pi*R)) * np.exp(-1j*k*R)
+    G = -EMConst.mu0 * (-1.0/(4.0*np.pi*R)) * np.exp(-1j*k*R)
     return G
 
 
@@ -38,7 +38,7 @@ def G_Q(k, R):
     # input:
     # R: distance
     # k: wavenumber
-    G = (-1/EMConst.eps0) * (1/(4*np.pi*R)) * (1j*k + 1/R) * np.exp(-1j*k*R)
+    G = (-1/EMConst.eps0) * (1.0/(4.0*np.pi*R)) * (1j*k + 1/R) * np.exp(-1j*k*R)
     return G
 
 
@@ -59,9 +59,10 @@ def R(field_xyz, source_xyz):
     # this function returns a matrix of |r-r'| value, where r is the field point
     # and
     # r' is the source point
-    field_X, source_X = np.meshgrid(source_xyz[:, 0], field_xyz[:, 0])
-    field_Y, source_Y = np.meshgrid(source_xyz[:, 1], field_xyz[:, 1])
-    field_Z, source_Z = np.meshgrid(source_xyz[:, 2], field_xyz[:, 2])
+
+    source_X, field_X = np.meshgrid(source_xyz[:, 0], field_xyz[:, 0])
+    source_Y, field_Y = np.meshgrid(source_xyz[:, 1], field_xyz[:, 1])
+    source_Z, field_Z = np.meshgrid(source_xyz[:, 2], field_xyz[:, 2])
 
     v_field_source_x = field_X - source_X
     v_field_source_y = field_Y - source_Y

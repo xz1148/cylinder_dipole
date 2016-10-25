@@ -1,6 +1,7 @@
 import EMConst     # this file contains basic EM constants
 import dipole as dp
 import numpy as np
+import matplotlib.pyplot as plt
 import func
 
 print '==========program start running==========\n'
@@ -9,7 +10,7 @@ print 'The frequency is %7.2f MHz' % (freq / 1e6)
 lambda0 = EMConst.c0 / freq # the wave length in free space
 print 'The wave length in free space is %2.1f meters' % (lambda0)
 omega = 2.0 * np.pi * freq # the angular frequency
-k0 = omega ** 2.0 * EMConst.eps0 * EMConst.mu0 # the wave number in free space
+k0 = np.sqrt(omega ** 2.0 * EMConst.eps0 * EMConst.mu0) # the wave number in free space
 
 
 
@@ -21,12 +22,12 @@ y_dipole = r_dipole * np.sin(theta_dipole) # the y coordinate of dipole
 z_dipole = 0.0  # the z coordiante of the dipole
 
 # length of the dipole
-length_dipole = lambda0 / 2 # dipole antennas length is half wave length
+length_dipole = lambda0 / 2 * 0.95 # dipole antennas length is half wave length
 # the segment length of dipole is fixed
 # the maximum segment length of the dipole, this number could be different from
 # the real segment length
-dl_dipole = lambda0 / 20
-rho_dipole = 0.003   # the radius of the dipole
+dl_dipole = lambda0 / 30
+rho_dipole = 0.015   # the radius of the dipole
 
 
 
@@ -68,7 +69,7 @@ u_match_node1_z = v_match_node1_z / R_match_node1
 
 
 # the vector of I * dl
-dI_x, dI_y, dI_z = func.dI( node0_xyz, node1_xyz )
+dI_x, dI_y, dI_z = func.dI(node0_xyz, node1_xyz)
 G_A = func.G_A(k0, R_match_segment)
 
 # the E field contributed by G_A
@@ -79,16 +80,22 @@ E_A_z = -1j * omega * dI_z * G_A
 # the charges at node0 and node1, current flow from node0 to node1
 Q0 = 1 / (-1j * omega)
 Q1 = -1 / (-1j * omega)
-G_Q0 = func.G_Q(R_match_node0, k0)
-G_Q1 = func.G_Q(R_match_node1, k0)
+G_Q0 = func.G_Q(k0, R_match_node0)
+G_Q1 = func.G_Q(k0, R_match_node1)
 E_phi_x = Q0*G_Q0*u_match_node0_x + Q1*G_Q1*u_match_node1_x
 E_phi_y = Q0*G_Q0*u_match_node0_y + Q1*G_Q1*u_match_node1_y
 E_phi_z = Q0*G_Q0*u_match_node0_z + Q1*G_Q1*u_match_node1_z
 
-
-
-
-print E_A_x
-print E_A_y
-print E_A_z
+print node0_xyz
+print node1_xyz
+E_z = E_A_z - E_phi_z
+# set up the Excitations
+V_in =  np.zeros(N_match, float)
+V_in[(N_match+1)/2-1] = 1.0
+I = np.linalg.solve(E_z, V_in)
+Z_in =  1.0 * np.abs(dI_z[0]) / I[(N_match+1)/2-1]
+print Z_in
+print np.abs(I[(N_match+1)/2-1])
+plt.plot(segment_xyz[:,2], np.abs(I))
+plt.show()
 
