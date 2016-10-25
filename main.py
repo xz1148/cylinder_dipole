@@ -25,7 +25,7 @@ length_dipole = lambda0 / 2 # dipole antennas length is half wave length
 # the segment length of dipole is fixed
 # the maximum segment length of the dipole, this number could be different from
 # the real segment length
-dl_dipole = lambda0 / 10
+dl_dipole = lambda0 / 20
 rho_dipole = 0.003   # the radius of the dipole
 
 
@@ -58,13 +58,37 @@ R_match_segment, _, _, _ = func.R(match_xyz, segment_xyz)
 R_match_node1, v_match_node1_x, v_match_node1_y, v_match_node1_z \
     = func.R(match_xyz, node1_xyz)
 
+# normalize all the vectors, u means unit vector
+u_match_node0_x = v_match_node0_x / R_match_node0
+u_match_node0_y = v_match_node0_y / R_match_node0
+u_match_node0_z = v_match_node0_z / R_match_node0
+u_match_node1_x = v_match_node1_x / R_match_node1
+u_match_node1_y = v_match_node1_y / R_match_node1
+u_match_node1_z = v_match_node1_z / R_match_node1
+
+
 # the vector of I * dl
 dI_x, dI_y, dI_z = func.dI( node0_xyz, node1_xyz )
 G_A = func.G_A(k0, R_match_segment)
 
+# the E field contributed by G_A
+E_A_x = -1j * omega * dI_x * G_A
+E_A_y = -1j * omega * dI_y * G_A
+E_A_z = -1j * omega * dI_z * G_A
+
 # the charges at node0 and node1, current flow from node0 to node1
 Q0 = 1 / (-1j * omega)
 Q1 = -1 / (-1j * omega)
+G_Q0 = func.G_Q(R_match_node0, k0)
+G_Q1 = func.G_Q(R_match_node1, k0)
+E_phi_x = Q0*G_Q0*u_match_node0_x + Q1*G_Q1*u_match_node1_x
+E_phi_y = Q0*G_Q0*u_match_node0_y + Q1*G_Q1*u_match_node1_y
+E_phi_z = Q0*G_Q0*u_match_node0_z + Q1*G_Q1*u_match_node1_z
 
 
-print v_match_node0_x
+
+
+print E_A_x
+print E_A_y
+print E_A_z
+

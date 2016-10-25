@@ -22,9 +22,9 @@ def dipole(x, y, z, length, dl):
 
 
     N_nodes = int(np.rint(length / dl)) # round the value, the number of nodes
-    if N_nodes%2 == 0:       # if the number of nodes is even
+    if N_nodes%2 == 1:       # if the number of nodes is even
         N_nodes += 1         # change it into a odd value
-        print 'The number of segments is even number, changed to odd'
+        print 'The number of segments is odd number, changed to even'
     N_segments = N_nodes - 1 # this is the number of segments
 
     Tip1_z = z + length / 2.0  # the z coordinate of one tip of dipole

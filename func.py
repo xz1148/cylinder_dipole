@@ -29,7 +29,7 @@ def G_A(k, R):
     # this is the Green's function for A vector
     # input:
     # R: the matrix |r - r'|, r is the observation point, r' is the source point
-    G = -EMConst.mu0 * (-1.0 / (4.0 * np.pi)) * np.exp(-1j*k*R)
+    G = -EMConst.mu0 * (-1.0 / (4.0*np.pi*R)) * np.exp(-1j*k*R)
     return G
 
 
