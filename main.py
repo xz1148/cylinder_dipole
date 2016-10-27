@@ -1,35 +1,40 @@
-import EMConst     # this file contains basic EM constants
+
+# this module generates the coordinate and the boundary conditions of a diple
+# the dipole is vertically polarized, so the dipole is aligned along the
+# direction of z-axis
+# unit: in meters
+
+
 import numpy as np
-import impedance
-import matplotlib.pyplot as plt
-freq = np.arange(300e6, 1000e6, 10e6)
-n_freq = freq.shape[0]
 
-# the position of the dipole
-r_dipole = 1.0  #the locations of the dipole
-theta_dipole = 0.0  # the cylindral coordinate of dipole
-x_dipole = r_dipole * np.cos(theta_dipole) # the x coordiante of dipole
-y_dipole = r_dipole * np.sin(theta_dipole) # the y coordinate of dipole
-z_dipole = 0.0  # the z coordiante of the dipole
+def dipole_meshing(x0, y0, z0, x1, y1, z1, n_seg):
+# input:
+# float x0, y0, z0
+# x1, y1, z1: the coordinate of starting point and ending point of dipole
+# int n_seg : number of segments
 
-# length of the dipole
-# the segment length of dipole is fixed
-# the maximum segment length of the dipole, this number could be different from
-# the real segment length
-rho_dipole = 0.008   # the radius of the dipole
+# returned value:
+# xyz: the n * 3 matrix of coordinates
 
-Z0 = np.zeros(n_freq, complex)
-Z1 = np.zeros(n_freq, complex)
+    # x, y, z are the coordiantes of points
+    n_node = n_seg + 1 # the number of nodes is n + 1
+    x = np.linspace(x0, x1, n_node)
+    y = np.linspace(y0, y1, n_node)
+    z = np.linspace(z0, z1, n_node)
+    xyz = np.stack((x, y, z), axis=1)
 
-for x in range(n_freq):
-    lambda0 = EMConst.c0 / freq[x] # the wave length in free space
-    length_dipole = lambda0 / 2 * 0.95 # dipole antennas length is half wave length
-    dl_dipole = lambda0 / 30
-    Z0[x], Z1[x] = impedance.dipole_impedance_calculation(freq[x], length_dipole, rho_dipole, dl_dipole,
-        x_dipole, y_dipole, z_dipole)
-print freq.shape[0]
+    # index of segments
+    idx_seg = np.arange(n_seg)
+    idx_node = np.arange(n_node)
+    idx_node0 = idx_node[0:-1]
+    idx_node1 = idx_node[1:n_node]
+    mesh = np.stack((idx_seg, idx_node0, idx_node1), axis=1)
 
-plt.plot(freq, np.real(Z0), freq, np.real(Z1))
-plt.show()
+    return xyz, mesh
+
+if __name__=="__main__":
+    a, b = dipole_meshing(0,0,0,3.0,2.0,1.0,6)
+    print a
+    print b
 
 
