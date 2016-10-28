@@ -3,7 +3,7 @@ import numpy as np
 def mesh_read(file_name):
     # this function reads the tetrahedron data from a file
     print 'reading from file ' + file_name
-    f = open('sphere.msh', 'r')
+    f = open(file_name, 'r')
     for n in range(4):
         f.readline()
     N_nodes = int(f.readline()) # reads the number of nodes
@@ -42,3 +42,23 @@ def mesh_read(file_name):
             else:
                 tetra_nodes = np.vstack((tetra_nodes, tetra_nodes_temp))
     return idx_nodes, xyz_nodes, tetra_nodes
+
+def neighbor_read(file_name):
+    print 'reading neighbor from file ' + file_name
+    f = open(file_name, 'r')
+    line_temp = np.empty(4, int)
+    #read the first line
+    line_temp_txt = f.readline()
+    line_temp_split = line_temp_txt.split()
+    neighbor = np.empty(4)
+    for n in range(4):
+        neighbor[n] = int(line_temp_split[n])
+    line_temp_txt = f.readline()
+    #read the following lines
+    while line_temp_txt != '':
+        line_temp_split = line_temp_txt.split()
+        for n in range(4):
+            line_temp[n] = int(line_temp_split[n])
+        neighbor = np.vstack((neighbor, line_temp))
+        line_temp_txt = f.readline()
+    return neighbor
