@@ -1,2 +1,2 @@
-python mesh_read.py
+python main.py
 
