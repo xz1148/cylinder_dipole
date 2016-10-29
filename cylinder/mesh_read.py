@@ -50,7 +50,7 @@ def neighbor_read(file_name):
     #read the first line
     line_temp_txt = f.readline()
     line_temp_split = line_temp_txt.split()
-    neighbor = np.empty(4)
+    neighbor = np.empty(4, int)
     for n in range(4):
         neighbor[n] = int(line_temp_split[n])
     line_temp_txt = f.readline()
@@ -61,4 +61,17 @@ def neighbor_read(file_name):
             line_temp[n] = int(line_temp_split[n])
         neighbor = np.vstack((neighbor, line_temp))
         line_temp_txt = f.readline()
-    return neighbor
+    # this combination will give the tetrahedron pairs
+    file_length = neighbor.shape[0]
+    combination = [0,1,0,2,0,3,1,2,1,3,2,3]
+    raw_tri_pair = neighbor[:, combination]
+    tri_pair  = raw_tri_pair.reshape(6*file_length, 2)
+    tri_pair_contains_empty_1 = tri_pair[:, 0] == -1
+    tri_pair_contains_empty_2 = tri_pair[:, 1] == -1
+    tri_pair_contains_empty = np.logical_or(
+        tri_pair_contains_empty_1,
+        tri_pair_contains_empty_2)
+    tri_pair_empty_filtered = \
+        tri_pair[np.logical_not(tri_pair_contains_empty), :]
+    return tri_pair_empty_filtered
+

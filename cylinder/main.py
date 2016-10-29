@@ -22,14 +22,16 @@ def write_table_file(file_name, var):
 
 node_file_name = 'sphere_nodes.txt'
 element_file_name = 'sphere_elements.txt'
-neighbor_file_name = 'cube_element_neighbors.txt'
+neighbor_file_name = 'sphere_element_neighbors.txt'
+tri_pair_file_name = 'sphere_tri_pairs.txt'
 
 
 write_table_file(node_file_name, node_xyz)
 write_table_file(element_file_name, tetra_node)
-neighbor = mesh_read.neighbor_read(neighbor_file_name)
+tri_pair = mesh_read.neighbor_read(neighbor_file_name)
+write_table_file(tri_pair_file_name, tri_pair)
 
-print neighbor
+#print tri_pair
 
 
 
