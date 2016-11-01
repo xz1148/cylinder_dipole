@@ -61,20 +61,23 @@ def Kernel(x):
 
 
 
-x1 = 0.0
-y1 = 0.0
-x2 = 1.0
-y2 = 1.0
-x3 = 1.0
-y3 = 5.0
-order = 5
+#x1 = 0.0
+#y1 = 0.0
+#x2 = 1.0
+#y2 = 1.0
+#x3 = 1.0
+#y3 = 5.0
+order = 8
 sample, weight = np.polynomial.legendre.leggauss(order)
-a, b = Quad_Tri_Sample(x1, y1, x2, y2, x3, y3, sample)
-c, d = Quad_Tri_Weight(x1, y1, x2, y2, x3, y3, sample, weight)
-z = np.ones((order, order), float)
-Z = np.asmatrix(z)
-C = np.asmatrix(c)
-D = np.asmatrix(d)
+#a, b = Quad_Tri_Sample(x1, y1, x2, y2, x3, y3, sample)
+#c, d = Quad_Tri_Weight(x1, y1, x2, y2, x3, y3, sample, weight)
+#z = np.ones((order, order), float)
+#Z = np.asmatrix(z)
+#C = np.asmatrix(c)
+#D = np.asmatrix(d)
+x, _ = sample_points(0.1,0.1,1,1,sample)
 
-print D * Z * C.T
 
+
+print np.sum(np.sqrt(1.0 / x) * weight*(0.9)/2.0) + 2 * np.sqrt(0.1)
+print x
