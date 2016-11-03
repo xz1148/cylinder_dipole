@@ -1,76 +1,62 @@
+import TriPoints as TP
 import numpy as np
+import Quad
 
-def centroid(p1, p2, p3, p4):
-    # input:
-    # pn: float, n*3 size of array of cartisian coordinates
-    pc = (p1+p2+p3+p4) / 4.0
-    return pc
+p1 = np.array([0.0, 0.0, 0.0])
+p2 = np.array([1.0, 0.0, 0.0])
+p3 = np.array([0.0, 1.0, 0.0])
+p4 = np.array([0.0, 0.0, 1.0])
+
+pc = TP.centroid(p1, p2, p3, p4)
+ph1, ph2, ph3, ph4 = TP.ph(p1, p2, p3, p4, pc)
+pg1_23 = TP.pg_single_segment(ph1, p2, p3)
+
+# the tetrahedron is formed by pc, ph1, pg1_23, p1
+order = 4
+sample, weight = np.polynomial.legendre.leggauss(order)
+h = np.linalg.norm(ph1 - pc)
+g = np.linalg.norm(pg1_23 - ph1)
+base = np.linalg.norm(p1 - pg1_23)
 
 
-def ph_single_facet(p1, p2, p3, pc):
-    # the projection of pc to surface formed by p1, p2, p3
-    # p1, p2, p3, pc are array of length 3
-    # return
-    # a length 3 array
-    M = np.matrix([[p1[0], p1[1], p1[2], 1],
-                      [p2[0], p2[1], p2[2], 1],
-                      [p3[0], p3[1], p3[2], 1]])
-    a = np.linalg.det(M[:,[1,2,3]])
-    b = -np.linalg.det(M[:,[0,2,3]])
-    c = np.linalg.det(M[:,[0,1,3]])
-    d = -np.linalg.det(M[:,[0,1,2]])  # ax + by + cz + d = 0
+# then calculate the sample points
+phi_max = np.arctan(base / h)
 
-    t = -(a*pc[0] + b*pc[1] + c*pc[2] + d) / \
-        (a**2 + b**2 + c**2)
-    p = np.zeros(3, float)
-    p[0] = a*t + pc[0]
-    p[1] = b*t + pc[1]
-    p[2] = c*t + pc[2]
-    return p
 
-def pg_single_segment(pc, p1, p2):
-    # input
-    # this function calculates the projection of pc on segment p1 -> p2
-    # size 3 array, float, pc, p1, p2
-    a = p2[0] - p1[0]  # the perpendcular vector
-    b = p2[1] - p1[1]
-    c = p2[2] - p1[2]
-    d = -(pc[0]*a +  pc[1]*b + pc[2]*c)  # pc is on the plane
-    t = -(a*p1[0] + b*p1[1] + c*p2[2] + d) / (a**2 + b**2 + c**2)
-    pg = np.zeros(3, float)
-    pg[0] = p1[0] + a*t
-    pg[1] = p1[1] + b*t
-    pg[2] = p1[2] + c*t
-    return pg
+weight_vec = np.tile(weight, order)
+weight_mat = np.reshape(weight_vec, (order, order))
+
+phi = Quad.sample_points1D(0.0, phi_max, sample)
+
+phi_vec = np.repeat(phi, order)
+phi_mat = np.reshape(phi_vec, (order, order))
+weight_phi_mat = weight_mat.T / phi_max
 
 
 
-def ph(p1, p2, p3, p4, pc):
-    # pn, n=1,2,3,4, pc are n*3 size array
-    N_tri = p1.shape[0]
-    ph1 = np.zeros((N_tri, 3), float)
-    ph2 = np.zeros((N_tri, 3), float)
-    ph3 = np.zeros((N_tri, 3), float)
-    ph4 = np.zeros((N_tri, 3), float)
-    for n in range(N_tri):
-        ph1[n] = ph_single_facet(p2[n], p3[n], p4[n], pc[n])
-        ph2[n] = ph_single_facet(p1[n], p3[n], p4[n], pc[n])
-        ph3[n] = ph_single_facet(p1[n], p2[n], p4[n], pc[n])
-        ph4[n] = ph_single_facet(p1[n], p2[n], p3[n], pc[n])
-    return ph1, ph2, ph3, ph4
+theta_max = np.arctan(g/h/np.cos(phi))
+theta = np.zeros((order, order), float)
+weight_theta_mat = np.zeros((order, order), float)
+
+for n in range(order):
+    theta[n] = Quad.sample_points1D(0, theta_max[n], sample)
+    weight_theta_mat[n] = weight_mat[n] / theta_max[n]
 
 
-if __name__ == '__main__':
-    p1 = np.array([[0,0,0],[0,0,0]])
-    p2 = np.array([[0.3,0.2,0.1],[0.3,0,0]])
-    p3 = np.array([[0,0.1,0.3],[0,0.3,0]])
-    p4 = np.array([[0,0,0.5],[0,0,0.3]])
-    pc =  centroid(p1, p2, p3, p4)
-    ph1, ph2, ph3, ph4 = ph(p1, p2, p3, p4, pc)
-    pg = pg_single_segment(ph1[0], p2[0], p3[0])
+print 'phi'
+print phi
+print 'theta_max'
+print theta_max
+print 'weight_phi_mat'
+print weight_phi_mat
+print 'weight_theta_mat'
+print weight_theta_mat
+print 'weight_mat.T'
+print weight_mat.T
+print 'phi_mat'
+print phi_mat
+print 'theta'
+print theta
+print 'weight[1]'
 
-    print ph1[0]
 
-    print np.dot(pc[0] - ph1[0], p3[0] - p2[0])
-    print np.dot(pc[0] - ph1[0], p4[0] - p2[0])
-    print np.dot(pc[0] - ph1[0], p4[0] - p3[0])

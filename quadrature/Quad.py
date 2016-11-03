@@ -1,5 +1,10 @@
 import numpy as np
 
+def sample_points1D(x1, x2, sample):
+    a = (x2 + x1) / 2.0
+    b = (x2 - x1) / 2.0
+    samples = sample*b + a
+    return samples
 
 def sample_points(x1, y1, x2, y2, sample):
     # x1, y1, x2, y2, x3, y3 are the cartisian coordinates, float
@@ -8,12 +13,14 @@ def sample_points(x1, y1, x2, y2, sample):
     # length of vector p2 - p1
     # area of triangle formed by the vector
     # height of the triangle
-    a = (x2 + x1) / 2.0
-    b = (x2 - x1) / 2.0
-    x_samples = sample*b + a
-    a = (y2 + y1) / 2.0
-    b = (y2 - y1) / 2.0
-    y_samples = sample*b + a
+    # a = (x2 + x1) / 2.0
+    # b = (x2 - x1) / 2.0
+    # x_samples = sample*b + a
+    # a = (y2 + y1) / 2.0
+    # b = (y2 - y1) / 2.0
+    # y_samples = sample*b + a
+    x_samples = sample_points1D(x1, x2, sample)
+    y_samples = sample_points1D(y1, y2, sample)
     return x_samples, y_samples
 
 
