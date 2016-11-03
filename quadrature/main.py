@@ -28,6 +28,23 @@ def ph_single_facet(p1, p2, p3, pc):
     p[2] = c*t + pc[2]
     return p
 
+def pg_single_segment(pc, p1, p2):
+    # input
+    # this function calculates the projection of pc on segment p1 -> p2
+    # size 3 array, float, pc, p1, p2
+    a = p2[0] - p1[0]  # the perpendcular vector
+    b = p2[1] - p1[1]
+    c = p2[2] - p1[2]
+    d = -(pc[0]*a +  pc[1]*b + pc[2]*c)  # pc is on the plane
+    t = -(a*p1[0] + b*p1[1] + c*p2[2] + d) / (a**2 + b**2 + c**2)
+    pg = np.zeros(3, float)
+    pg[0] = p1[0] + a*t
+    pg[1] = p1[1] + b*t
+    pg[2] = p1[2] + c*t
+    return pg
+
+
+
 def ph(p1, p2, p3, p4, pc):
     # pn, n=1,2,3,4, pc are n*3 size array
     N_tri = p1.shape[0]
@@ -42,21 +59,18 @@ def ph(p1, p2, p3, p4, pc):
         ph4[n] = ph_single_facet(p1[n], p2[n], p3[n], pc[n])
     return ph1, ph2, ph3, ph4
 
+
 if __name__ == '__main__':
     p1 = np.array([[0,0,0],[0,0,0]])
-    p2 = np.array([[1,0,0],[0.3,0,0]])
-    p3 = np.array([[0,0.5,0],[0,0.3,0]])
-    p4 = np.array([[0,0,1],[0,0,0.3]])
+    p2 = np.array([[0.3,0.2,0.1],[0.3,0,0]])
+    p3 = np.array([[0,0.1,0.3],[0,0.3,0]])
+    p4 = np.array([[0,0,0.5],[0,0,0.3]])
     pc =  centroid(p1, p2, p3, p4)
-
     ph1, ph2, ph3, ph4 = ph(p1, p2, p3, p4, pc)
+    pg = pg_single_segment(ph1[0], p2[0], p3[0])
 
-    a = ph1-pc
-    b = ph1-p2
-    c = ph1-p3
-    d = ph1-p4
+    print ph1[0]
 
-    print ph1
-    print np.dot(a[0], b[0])
-    print np.dot(a[0], c[0])
-    print np.dot(a[0], d[0])
+    print np.dot(pc[0] - ph1[0], p3[0] - p2[0])
+    print np.dot(pc[0] - ph1[0], p4[0] - p2[0])
+    print np.dot(pc[0] - ph1[0], p4[0] - p3[0])

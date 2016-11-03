@@ -1,1 +1,1 @@
-python main_bak.py
+python main.py
