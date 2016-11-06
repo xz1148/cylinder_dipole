@@ -1,4 +1,50 @@
 import numpy as np
+import TriPoints as TP
+import Quad
+def Quad_SubTetra(pc, ph, p1, p2, order):
+    # the function calculates the quadrature over a tetrahedron
+    # ph: the projection of centroid on each faces
+    # p1, p2: the segment to which ph will project to
+    # the final tetrahedon is formed by 4 points
+    # ph, pg, pg_12, and p1
+    # for another tetrahedron(ph, pg, pg_12, p2) can be calculated in the same
+    # way
+    pg_12 = TP.pg_single_segment(ph, p1, p2)
+
+    # the tetrahedron is formed by pc, ph1, pg1_23, p1
+    sample, weight = np.polynomial.legendre.leggauss(order)
+    h = np.linalg.norm(ph - pc) # ph1 is the point projected on face (p2, p3, p4)
+    g = np.linalg.norm(pg_12 - ph)
+    base = np.linalg.norm(p1 - pg_12)
+
+
+    # then calculate the sample points
+    phi_max = np.arctan(base / g)  # this is a single valu
+    phi = Quad.sample_points1D(0.0, phi_max, sample)
+    weight_phi = weight / 2.0 *  phi_max
+
+    theta_max = np.arctan(g/np.cos(phi)/h)   # an array
+    theta = np.zeros((order, order), float)
+    weight_theta = np.zeros((order, order), float)
+    for n in range(order):
+        theta[n] = Quad.sample_points1D(0, theta_max[n], sample)
+        weight_theta[n] = weight / 2.0 * theta_max[n]
+
+    r_max = h / np.cos(theta)
+    r = np.zeros((order, order, order), float)
+    weight_r = np.zeros((order, order, order), float)
+    for m in range(order):
+        for n in range(order):
+            r[m,n] = Quad.sample_points1D(0, r_max[m,n], sample)
+            weight_r[m,n] =  weight / 2.0 * r_max[m,n]
+
+    int_r = np.sum((r**2.0)*weight_r, 2)      # the integal over r
+    int_theta_r = np.sum(np.sin(theta)*int_r*weight_theta, 1)
+    int_phi_theta_r = np.sum(int_theta_r*weight_phi)
+    volume = base*h*g*0.5 / 3.0
+    return int_phi_theta_r, volume
+
+
 
 def sample_points1D(x1, x2, sample):
     a = (x2 + x1) / 2.0
