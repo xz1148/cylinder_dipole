@@ -2,14 +2,27 @@ import TriPoints as TP
 import numpy as np
 import Quad
 
-p1 = np.array([100.0, 1.0, 3.0])
-p2 = np.array([5.0, 4.0, 2.0])
-p3 = np.array([3.0, 1.0, 1.0])
-p4 = np.array([2.0, 3.0, 5.0])
+p1 = np.array([0.0, 0.0, 0.0])
+p2 = np.array([3.0, 1.9, 0.0])
+p3 = np.array([2.9, 2.0, 0.0])
+p4 = np.array([0.0, 0.0, 2.0])
+order = 20
 
 pc = TP.centroid(p1, p2, p3, p4)
 ph1, ph2, ph3, ph4 = TP.ph(p1, p2, p3, p4, pc)
-a, b = Quad.Quad_SubTetra(pc, ph1, p1, p2, 5)
+
+a = Quad.Quad_SubTetra_Face(pc, ph1, p2, p3, p4, order)
+b = Quad.Volume_Tetra(pc, p2, p3, p4)
+
+c = Quad.Quad_SubTetra_Segment(pc, ph1, p2, p3, order)
+pg1_23 = TP.pg_single_segment(ph1, p2, p3)
+d = Quad.Volume_Tetra(pc, ph1, pg1_23, p2)
+
+v1 = pg1_23 - ph1
+v2 = p3 - p4
+pen = np.dot(v1, v2)
+
+
 #pg1_23 = TP.pg_single_segment(ph1, p2, p3)
 #
 ## the tetrahedron is formed by pc, ph1, pg1_23, p1
@@ -60,5 +73,19 @@ a, b = Quad.Quad_SubTetra(pc, ph1, p1, p2, 5)
 ##weight_result = weight / 2.0 * r_max[0,0]
 ##print sample_result
 #print np.linalg.norm(int_r - r_max **3.0 / 3.0)
+print 'a,b'
 print a, b
 
+print 'c,d'
+print c, d
+print 'p3'
+print p3
+
+print 'p4'
+print p4
+print 'pg1_23'
+print pg1_23
+print 'ph1'
+print ph1
+print 'pen'
+print pen

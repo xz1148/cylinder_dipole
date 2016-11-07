@@ -36,7 +36,7 @@ def pg_single_segment(ph, p1, p2):
     b = p2[1] - p1[1]
     c = p2[2] - p1[2]
     d = -(ph[0]*a +  ph[1]*b + ph[2]*c)  # pc is on the plane
-    t = -(a*p1[0] + b*p1[1] + c*p2[2] + d) / (a**2 + b**2 + c**2)
+    t = -(a*p1[0] + b*p1[1] + c*p1[2] + d) / (a**2 + b**2 + c**2)
     pg = np.zeros(3, float)
     pg[0] = p1[0] + a*t
     pg[1] = p1[1] + b*t

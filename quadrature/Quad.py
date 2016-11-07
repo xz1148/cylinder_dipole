@@ -1,7 +1,65 @@
 import numpy as np
 import TriPoints as TP
 import Quad
-def Quad_SubTetra(pc, ph, p1, p2, order):
+def Volume_Tetra(p1, p2, p3, p4):
+    v1 = np.append(p1, 1)
+    v2 = np.append(p2, 1)
+    v3 = np.append(p3, 1)
+    v4 = np.append(p4, 1)
+    volume = np.abs(np.linalg.det([v1, v2, v3, v4]) / 6.0)
+    return volume
+
+def Quad_SubTetra_Face(pc, ph, p1, p2, p3, order):
+    volume_surface = np.zeros(6, float)
+    volume_surface_ref = np.zeros(6, float)
+    pg_mn = np.zeros((3,3), float)
+    vg_mn = np.zeros((3,3), float)
+
+    volume_surface[0] = Quad_SubTetra_Segment(pc, ph, p1, p2, order)
+    volume_surface[1] = Quad_SubTetra_Segment(pc, ph, p2, p1, order)
+    volume_surface[2] = Quad_SubTetra_Segment(pc, ph, p1, p3, order)
+    volume_surface[3] = Quad_SubTetra_Segment(pc, ph, p3, p1, order)
+    volume_surface[4] = Quad_SubTetra_Segment(pc, ph, p2, p3, order)
+    volume_surface[5] = Quad_SubTetra_Segment(pc, ph, p3, p2, order)
+
+    pg_mn[0] = TP.pg_single_segment(ph, p1, p2)
+    pg_mn[1] = TP.pg_single_segment(ph, p1, p3)
+    pg_mn[2] = TP.pg_single_segment(ph, p2, p3)
+
+
+    vg_mn[0] = pg_mn[0] - ph
+    vg_mn[1] = pg_mn[1] - ph
+    vg_mn[2] = pg_mn[2] - ph
+
+
+    volume_surface_ref[0] =  Volume_Tetra(pc, pg_mn[0], p1, ph)
+    volume_surface_ref[1] =  Volume_Tetra(pc, pg_mn[0], p2, ph)
+    volume_surface_ref[2] =  Volume_Tetra(pc, pg_mn[1], p1, ph)
+    volume_surface_ref[3] =  Volume_Tetra(pc, pg_mn[1], p3, ph)
+    volume_surface_ref[4] =  Volume_Tetra(pc, pg_mn[2], p2, ph)
+    volume_surface_ref[5] =  Volume_Tetra(pc, pg_mn[2], p3, ph)
+
+    print 'volume_surface'
+    print volume_surface
+    print 'volume_surface_ref'
+    print volume_surface_ref
+    print Volume_Tetra(pc, ph, p1, p2)
+    print 'sum(volume_suface_ref)'
+    print np.sum(volume_surface_ref)
+    volume = np.sum(volume_surface)
+    print 'length1'
+    print np.linalg.norm(p1-pg_mn[0]) + np.linalg.norm(p2 - pg_mn[0])
+    print 'length2'
+    print np.linalg.norm(p1 - p2)
+    print 'pen'
+    print np.dot(pg_mn[0] - ph, p1 - p2)
+    print 'p1, p2, pg_mn'
+    print p1, p2, pg_mn[0]
+    return volume
+
+
+def Quad_SubTetra_Segment(pc, ph, p1, p2, order):
+
     # the function calculates the quadrature over a tetrahedron
     # ph: the projection of centroid on each faces
     # p1, p2: the segment to which ph will project to
@@ -41,8 +99,8 @@ def Quad_SubTetra(pc, ph, p1, p2, order):
     int_r = np.sum((r**2.0)*weight_r, 2)      # the integal over r
     int_theta_r = np.sum(np.sin(theta)*int_r*weight_theta, 1)
     int_phi_theta_r = np.sum(int_theta_r*weight_phi)
-    volume = base*h*g*0.5 / 3.0
-    return int_phi_theta_r, volume
+    # volume = base*h*g*0.5 / 3.0
+    return int_phi_theta_r
 
 
 
