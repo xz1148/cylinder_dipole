@@ -1,5 +1,6 @@
 import numpy as np
 import mesh_read
+import os
 from sys import getsizeof
 # node_idx is a list of node index
 # node_xyz the N * 3 matrix of coordinate
@@ -28,6 +29,7 @@ tri_pair_file_name = 'sphere_tri_pairs.txt'
 
 write_table_file(node_file_name, node_xyz)
 write_table_file(element_file_name, tetra_node)
+os.system('./find_neighbor sphere')
 tri_pair = mesh_read.neighbor_read(neighbor_file_name)
 write_table_file(tri_pair_file_name, tri_pair)
 

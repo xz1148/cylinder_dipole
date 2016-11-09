@@ -1,5 +1,5 @@
-radius = 10;
-lc = 2;
+radius = 1;
+lc = 0.2;
 Point(1) = {0,0,0,lc};                              
 Point(2) = {radius,0,0,lc};                         
 Point(3) = {-radius,0,0,lc};                        
