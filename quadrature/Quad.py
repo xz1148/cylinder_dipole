@@ -157,9 +157,7 @@ def Quad_Tri_Weight(x1, y1, x2, y2, x3, y3, sample, weight):
     weight1 = l * 0.5 * weight
     x, _ = sample_points(0,0,1,1, sample)
 
-    print h
     weight2 = x * h * weight * 0.5
-    print weight2
     return weight1, weight2
 
 
@@ -188,6 +186,6 @@ sample, weight = np.polynomial.legendre.leggauss(order)
 #D = np.asmatrix(d)
 x, _ = sample_points(0,0,2,2,sample)
 
-print np.sum(np.sin(x) * weight)
-print  -np.cos(2.0) + 1
+#print np.sum(np.sin(x) * weight)
+#print  -np.cos(2.0) + 1
 

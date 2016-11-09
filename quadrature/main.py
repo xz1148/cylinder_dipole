@@ -1,7 +1,6 @@
 import numpy as np
 import Quad
-
-
+import View
 #p0 = np.array([0.0,0.0,0.0])
 #p1 = np.array([1.0,5.0,2.0])
 #p2 = np.array([1.0,3.0,3.0])
@@ -27,7 +26,7 @@ v1_mat =  np.asmatrix(v1)
 v2_mat =  np.asmatrix(v2)
 v3_mat =  np.asmatrix(v3)
 
-order = 10
+order = 20
 sample, weight = np.polynomial.legendre.leggauss(order)
 
 p1_new = np.squeeze(np.asarray(new_axis * v1_mat.T))
@@ -36,7 +35,9 @@ p3_new = np.squeeze(np.asarray(new_axis * v3_mat.T))
 # change phi_max into a array
 phi_max = np.squeeze(np.asarray(np.arctan2(p3_new[1], p3_new[0])))
 phi = Quad.sample_points1D(0, phi_max, sample)
-weight_phi = weight / 2.0 *  phi_max
+# the weight of phi should always be positive number, because the quadrature of
+# solid angle cannot be negtive number
+weight_phi = weight / 2.0 * np.abs(phi_max)
 tan_phi = np.tan(phi)
 
 #p1_new is one the z-axis
@@ -71,6 +72,31 @@ for m in range(order):
         r[m,n] = Quad.sample_points1D(0, r_max[m,n], sample)
         weight_r[m,n] =  weight / 2.0 * r_max[m,n]
 
+# this gives the new cartisian coordinate of all sample points
+xyz_new = np.zeros((order, order, order, 3), float)
+for l in range(order):
+    for m in range(order):
+        for n in range(order):
+            xyz_new[l,m,n,0] = r[l,m,n] * np.sin(theta[l,m]) * np.cos(phi[l])
+            xyz_new[l,m,n,1] = r[l,m,n] * np.sin(theta[l,m]) * np.sin(phi[l])
+            xyz_new[l,m,n,2] = r[l,m,n] * np.cos(theta[l,m])
+# transform it back to the global coordinate
+new2global = np.linalg.inv(new_axis)
+xyz_global = np.zeros((order, order, order, 3), float)
+for l in range(order):
+    for m in range(order):
+        for n in range(order):
+            # the column vector of xyz_new
+            xyz_new_temp = np.asmatrix(xyz_new[l,m,n]).T
+            # it turns to an array which can be stored
+            xyz_global_temp = np.squeeze(np.asarray(new2global*xyz_new_temp))
+            xyz_global[l,m,n] = xyz_global_temp
+
+
+
+
+
+
 int_r = np.sum((r**2.0)*weight_r, 2)      # the integal over r
 int_theta_r = np.sum(np.sin(theta)*int_r*weight_theta, 1)
 int_phi_theta_r = np.sum(int_theta_r*weight_phi)
@@ -78,11 +104,15 @@ int_phi_theta_r = np.sum(int_theta_r*weight_phi)
 
 volume_ref = Quad.Volume_Tetra(np.array([0.0, 0.0, 0.0]), p1_new, p2_new, p3_new)
 volume_ref2 = Quad.Volume_Tetra(p0, p1, p2, p3)
+
 print volume_ref2
 print volume_ref
 print int_phi_theta_r
-print phi_max
+print xyz_global
+View.ViewPoints(np.reshape(xyz_global, (order*order*order, 3)), 10)
+
 #
+
 #
 #
 #
