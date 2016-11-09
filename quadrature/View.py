@@ -1,5 +1,6 @@
 import vtk
 import numpy as np
+
 def ViewPoints(p, p_size):
     num_p = p.shape[0]
     points = vtk.vtkPoints()
@@ -32,7 +33,7 @@ def ViewPoints(p, p_size):
     renWin.AddRenderer(ren)
     iren = vtk.vtkRenderWindowInteractor()
     iren.SetRenderWindow(renWin)
-    actor.GetProperty().SetColor(1,0,1)
+    actor.GetProperty().SetColor(1,0.5,1)
     ren.AddActor(actor)
 
     iren.Initialize()
